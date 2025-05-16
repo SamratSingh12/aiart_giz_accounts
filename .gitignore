@@ -1,0 +1,20 @@
+/__pycache__
+/node_modules
+/images/*
+!/images/.gitkeep
+/processed_images/*
+!/processed_images/.gitkeep
+/logs/*
+!/logs/.gitkeep
+*.pyc
+*.pyo
+__pycache__/
+.DS_Store
+
+# Environment variables and sensitive files
+.env
+firebase-service-account.json
+firebase-config.json
+*-firebase-adminsdk-*.json
+*.key
+*.pem
