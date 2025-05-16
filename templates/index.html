@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Art - Free Unlimited AI Image Generator | No Signup Required</title>
+    <meta name="description" content="Generate stunning AI images for free with our unlimited AI image generator. No signup required, instant results, and completely free to use.">
+    <meta name="keywords" content="AI image generator, free AI art, AI art generator, no signup, unlimited AI images, image generation, AI art creator">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="AI Art">
+
+    <meta name="5a8137c2095fcc91c57a307bc77230856293ef66" content="5a8137c2095fcc91c57a307bc77230856293ef66" />
+    
+	
+    <link rel="canonical" href="https://aiart-zroo.onrender.com/">
+    
+    <!-- Google Adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7179365574545627"
+    crossorigin="anonymous"></script>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aiart-zroo.onrender.com/">
+    <meta property="og:title" content="AI Art - Free, Unlimited AI Image Generator | No Signup Required">
+    <meta property="og:description" content="Generate beautiful AI images for free. No limits, no signup required, and completely free to use!">
+    <meta property="og:image" content="https://aiart-zroo.onrender.com/static/images/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aiart-zroo.onrender.com/">
+    <meta property="twitter:title" content="AI Art - Free, Unlimited AI Image Generator | No Signup Required">
+    <meta property="twitter:description" content="Generate beautiful AI images for free. No limits, no signup required, and completely free to use!">
+    <meta property="twitter:image" content="https://aiart-zroo.onrender.com/static/images/og-image.jpg">
+    
+    <!-- Structured Data / Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "AI Art Image Generator",
+      "url": "https://aiart-zroo.onrender.com",
+      "description": "Free, unlimited AI image generator with no signup required",
+      "applicationCategory": "DesignApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "operatingSystem": "Web Browser"
+    }
+    </script>
+
+    
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_auth_domain }}",
+            projectId: "{{ firebase_project_id }}",
+            appId: "{{ firebase_app_id }}"
+        };
+        
+        // Initialize Firebase
+        if (typeof firebase !== 'undefined') {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                console.log("Firebase initialized");
+            }
+        } else {
+            console.error("Firebase SDK not available");
+        }
+    </script>
+    
+    <!-- Global Auth Handler (loads first) -->
+    <script src="/static/js/auth-global.js"></script>
+    
+    <!-- Auth Fix Script -->
+    <script src="/static/js/auth-fix.js"></script>
+
+    <style>
+        :root {
+            --primary: #6d28d9;
+            --primary-dark: #5b21b6;
+            --primary-light: #8b5cf6;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+        
+        /* Dark mode variables */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #8b5cf6;
+                --primary-dark: #7c3aed;
+                --primary-light: #a78bfa;
+                --secondary: #10b981;
+                --secondary-dark: #059669;
+                --text: #f9fafb;
+                --text-light: #9ca3af;
+                --background: #1f2937;
+                --card-bg: #111827;
+                --border: #374151;
+            }
+        }
+        
+        /* Fix for horizontal scrolling on mobile */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+        }
+        
+        /* Mobile nav adjustment */
+        @media (max-width: 768px) {
+            .header {
+                width: 100%;
+                overflow: hidden;
+            }
+            
+            .header .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .nav-logo {
+                margin-right: 0;
+            }
+            
+            .nav-links {
+                width: 100%;
+                display: none !important; /* Ensure nav links are hidden by default */
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 1rem;
+            }
+            
+            .nav-links.active {
+                display: flex !important; /* Only show when active class is applied */
+            }
+            
+            .nav-link {
+                margin: 0.25rem;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                padding: 0.4rem 0.6rem;
+            }
+        }
+        
+        /* Advanced options styles */
+        .advanced-options-toggle {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        #toggle-advanced-options {
+            background-color: var(--background);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        
+        #toggle-advanced-options.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+        
+        .advanced-options-container {
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            background-color: var(--card-bg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Responsive form elements */
+        .form-input, .form-select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        @media (max-width: 480px) {
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            
+            .advanced-options-container {
+                padding: 0.75rem;
+            }
+            
+            #toggle-advanced-options {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Loading dots animation */
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .loading-dots div {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+            animation: dot-pulse 1.5s infinite ease-in-out;
+        }
+        
+        .loading-dots div:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .loading-dots div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dots div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dot-pulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Key Features Section Styles */
+        .key-features-section {
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .key-features-title {
+            color: #60a5fa;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .key-features-subtitle {
+            color: #6b7280;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .feature-item {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #f3f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon-wrapper svg {
+            width: 24px;
+            height: 24px;
+            color: #6d28d9;
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #111827;
+        }
+        
+        .feature-text {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration"></div>
+    
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="nav-logo">AI Art</a>
+                <button class="mobile-menu-btn">☰</button>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    
+                    <!-- AI Tools dropdown -->
+                    <div class="dropdown">
+                        <button type="button" class="dropdown-toggle nav-link">AI Tools <span class="dropdown-arrow">▼</span></button>
+                        <div class="dropdown-menu">
+                            <a href="/text-to-image" class="dropdown-item">Text to Image</a>
+                            <a href="/image-to-image" class="dropdown-item">Image to Image</a>
+                            <a href="/image-to-video" class="dropdown-item">Image to Video</a>
+                        </div>
+                    </div>
+                    
+                    <a href="/api-docs" class="nav-link">API</a>
+                    {% if current_user.is_authenticated %}
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                    <a href="/logout" class="nav-link">Logout</a>
+                    {% else %}
+                    <a href="#" class="nav-link open-auth-modal" data-mode="login">Login</a>
+                    <a href="#" class="nav-link open-auth-modal" data-mode="signup">Sign Up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <main class="main-content">
+        <div class="container my-4">
+            
+
+            <!-- Hero Section - AI Art Landing Page -->
+            <section id="ai-tools-section" class="mt-0 mb-16">
+                <div class="hero-container-new">
+                    <div class="hero-grid">
+                        <!-- Left side content -->
+                        <div class="hero-content-left">
+                            <h1 class="hero-heading">
+                                <span class="hero-heading-main">Transform Your Ideas</span>
+                                <div class="hero-heading-highlight">
+                                    <span class="gradient-text hero-gradient">AI Art Generator</span>
+                                    <svg class="hero-spark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 3L14.5 8.5H19.5L15.5 12.5L17 18L12 15L7 18L8.5 12.5L4.5 8.5H9.5L12 3Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                            </h1>
+                            
+                            <p class="hero-description-new">Create stunning, realistic images in seconds with our Free, Unlimited AI Art generator. No signup required.</p>
+                            
+                            <div class="hero-cta">
+                                <a href="/text-to-image" class="btn-hero-primary">
+                                    <span>Text to Image</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </a>
+                                <a href="/image-to-image" class="btn-hero-secondary">
+                                    <span>Image to Image</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                </a>
+                                <a href="/image-to-video" class="btn-hero-secondary">
+                                    <span>Image to Video</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                </a>
+                            </div>
+                            
+                            <!-- Stats/Features -->
+                            <div class="hero-stats">
+                                <div class="hero-stat">
+                                    <div class="hero-stat-number">100%</div>
+                                    <div class="hero-stat-label">Free</div>
+                                </div>
+                                <div class="hero-stat">
+                                    <div class="hero-stat-number">∞</div>
+                                    <div class="hero-stat-label">Unlimited</div>
+                                </div>
+                                <div class="hero-stat">
+                                    <div class="hero-stat-number">0</div>
+                                    <div class="hero-stat-label">No Signup Required</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right side preview/imagery -->
+                        <div class="hero-imagery">
+                            <div class="hero-image-container">
+                                <div class="hero-image-grid">
+                                    <div class="hero-image hero-image-1">
+                                        <img src="/static/images/sample1.jpg" alt="AI generated art sample" class="hero-img">
+                                        <div class="hero-image-overlay"></div>
+                                    </div>
+                                    <div class="hero-image hero-image-2">
+                                        <img src="/static/images/sample2.jpg" alt="AI generated art sample" class="hero-img">
+                                        <div class="hero-image-overlay"></div>
+                                    </div>
+                                    <div class="hero-image hero-image-3">
+                                        <img src="/static/images/sample3.jpg" alt="AI generated art sample" class="hero-img">
+                                        <div class="hero-image-overlay"></div>
+                                    </div>
+                                    <div class="hero-image hero-image-4">
+                                        <img src="/static/images/sample4.jpg" alt="AI generated art sample" class="hero-img">
+                                        <div class="hero-image-overlay"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Floating elements -->
+                                <div class="floating-element floating-element-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                </div>
+                                <div class="floating-element floating-element-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v19"></path><path d="M5 9l7-6 7 6"></path><path d="M2 15h20"></path></svg>
+                                </div>
+                                <div class="floating-element floating-element-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative elements -->
+                    <div class="hero-shape hero-shape-1"></div>
+                    <div class="hero-shape hero-shape-2"></div>
+                    <div class="hero-shape hero-shape-3"></div>
+                    <div class="hero-shape hero-shape-4"></div>
+                    
+                </div>
+            </section>
+            
+            <div class="card p-6 shadow-md mt-8">
+                <div class="light-effect"></div>
+                <h2 class="text-2xl font-semibold mb-4 gradient-text text-center">Inspiration Gallery</h2>
+                <p class="text-center text-gray-500 mb-6">Check out what's possible with our AI art generator</p>
+                <div class="gallery-grid">
+                    <div class="thumbnail-card">
+                        <img src="/static/images/sample1.jpg" alt="AI-generated YouTube thumbnail example showing space facts" onerror="this.src='/test_assets/placeholder.jpg'">
+                    </div>
+                    <div class="thumbnail-card">
+                        <img src="/static/images/sample2.jpg" alt="Professional YouTube thumbnail created with AI for gaming video" onerror="this.src='/test_assets/placeholder.jpg'">
+                    </div>
+                    <div class="thumbnail-card">
+                        <img src="/static/images/sample3.jpg" alt="Engaging YouTube thumbnail design for technology tutorial" onerror="this.src='/test_assets/placeholder.jpg'">
+                    </div>
+                    <div class="thumbnail-card">
+                        <img src="/static/images/sample4.jpg" alt="Creative YouTube thumbnail for travel vlog created using AI" onerror="this.src='/test_assets/placeholder.jpg'">
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <section class="key-features-section">
+            <div class="card p-6 shadow-md mt-8">
+                <h2 class="key-features-title">Key Features</h2>
+                <p class="key-features-subtitle">Discover what makes our AI art generator special</p>
+                
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v8"></path><path d="M4.93 10.93l1.41 1.41"></path><path d="M2 18h2"></path><path d="M20 18h2"></path><path d="M19.07 10.93l-1.41 1.41"></path>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">State-of-the-Art AI</h3>
+                        <p class="feature-text">Powered by the latest diffusion models to create stunning, realistic images from text descriptions</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"></path><path d="M12 18c3.3 0 6-2.7 6-6s-2.7-6-6-6-6 2.7-6 6 2.7 6 6 6z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Image Transformation</h3>
+                        <p class="feature-text">Transform your existing photos into various artistic styles with our image-to-image technology</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Lightning Fast</h3>
+                        <p class="feature-text">Generate high-quality images in seconds with our optimized infrastructure</p>
+                    </div>
+                </div>
+            </div>            </section>
+
+            <section id="faq" class="card p-6 shadow-md mt-8">
+                <div class="light-effect"></div>
+                <h2 class="text-2xl font-semibold mb-4 gradient-text text-center">Frequently Asked Questions</h2>
+                <p class="text-center text-gray-500 mb-6">Get answers to common questions about our AI art generator</p>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How does the AI image generator work?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Our AI image generator uses advanced machine learning algorithms to create beautiful images based on your text description. The AI understands the context of your prompt and generates visually appealing images in various artistic styles.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Is this service free to use?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, our image generation service is completely free to use with no limits. Create as many images as you need without any cost or signup requirements.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Can I customize the generated images?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Absolutely! You can download the generated images and further edit them in your preferred image editing software to add your own personal touch and artistic elements.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What image resolution do I get?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>All images are generated at a high resolution of 1920x1080 pixels. This ensures your AI art looks crisp and detailed across all devices and screen sizes.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How do I integrate the image generator with my workflow?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>For creators who need automated solutions, we offer a simple API that allows you to generate images programmatically. Check our API documentation for details on how to integrate it into your creative workflow.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What are the advanced options in image-to-image transformation?</h3>
+                            <div class="faq-toggle">
+                                <svg class="plus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <svg class="minus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The image-to-image feature allows you to transform existing images with several options:</p>
+                            <ul class="list-disc ml-6 mt-2">
+                                <li><strong>Style Preset:</strong> Choose artistic styles like anime, cinematic, digital art, etc.</li>
+                                <li><strong>Aspect Ratio:</strong> Control the dimensions of your output image</li>
+                                <li><strong>Output Format:</strong> Select PNG for best quality or other formats for smaller file sizes</li>
+                                <li><strong>Seed:</strong> Use a specific seed number to make transformations reproducible</li>
+                                <li><strong>Strength:</strong> Control how much the original image influences the result</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                <span class="footer-logo-text">AI Art</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="/" class="footer-link">Home</a>
+                <a href="/text-to-image" class="footer-link">Text to Image</a>
+                <a href="/image-to-image" class="footer-link">Image to Image</a>
+                <a href="/image-to-video" class="footer-link">Image to Video</a>
+                <a href="/api-docs" class="footer-link">API</a>
+            </div>
+            
+            <p class="footer-copyright">
+                &copy; 2025 AI Art. All rights reserved.
+            </p>
+        </div>
+    </footer>
+    
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/mobile-nav.js"></script>
+    <script src="/static/js/auth-modal.js"></script>
+    <script>
+        // DOM ready event handler
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded - checking auth state");
+            
+            // Get all login/signup buttons
+            const authButtons = document.querySelectorAll('.open-auth-modal');
+            console.log("Found auth buttons:", authButtons.length);
+            
+            // Add click event to each button
+            authButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log("Auth button clicked");
+                    
+                    // Get the auth mode (login or signup)
+                    const mode = this.getAttribute('data-mode');
+                    console.log("Auth mode:", mode);
+                    
+                    // Use auth-modal.js openAuthModal function if available
+                    if (window.openAuthModal) {
+                        window.openAuthModal(mode);
+                    } else {
+                        // Fallback to local modal creation and handling
+                        // Get or create the auth modal
+                        let authModal = document.getElementById('authModal');
+                        if (!authModal) {
+                            console.log("Creating auth modal");
+                            createAuthModal();
+                            authModal = document.getElementById('authModal');
+                        }
+                        
+                        if (authModal) {
+                            // Update modal content for login or signup
+                            updateModalContent(mode);
+                            
+                            // Show the modal
+                            authModal.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                        }
+                    }
+                });
+            });
+            
+            // Function to update modal content based on mode
+            function updateModalContent(mode) {
+                const authModalTitle = document.getElementById('authModalTitle');
+                const authModalSubtitle = document.getElementById('authModalSubtitle');
+                const googleBtnText = document.getElementById('googleBtnText');
+                const authSwitchText = document.getElementById('authSwitchText');
+                
+                if (!authModalTitle || !authModalSubtitle || !googleBtnText || !authSwitchText) {
+                    console.error("Modal elements not found");
+                    return;
+                }
+                
+                if (mode === 'login') {
+                    authModalTitle.textContent = 'Welcome Back';
+                    authModalSubtitle.textContent = 'Sign in to continue your creative journey';
+                    googleBtnText.textContent = 'Sign in with Google';
+                    authSwitchText.innerHTML = 'Don\'t have an account? <a href="#" class="auth-footer-link" id="authSwitchBtn">Sign up</a>';
+                } else {
+                    authModalTitle.textContent = 'Create Account';
+                    authModalSubtitle.textContent = 'Get started with your free AI Art account';
+                    googleBtnText.textContent = 'Sign up with Google';
+                    authSwitchText.innerHTML = 'Already have an account? <a href="#" class="auth-footer-link" id="authSwitchBtn">Login</a>';
+                }
+                
+                // Add event listener to the switch button
+                document.getElementById('authSwitchBtn').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    updateModalContent(mode === 'login' ? 'signup' : 'login');
+                });
+            }
+            
+            // Function to create the auth modal
+            function createAuthModal() {
+                const modalHTML = `
+                <div class="auth-modal-overlay" id="authModal">
+                    <div class="auth-modal">
+                        <button class="auth-modal-close" id="closeAuthModal">×</button>
+                        
+                        <div class="auth-modal-left">
+                            <div class="auth-modal-logo">
+                                <span class="auth-modal-logo-text">AI Art</span>
+                            </div>
+                            
+                            <h2 class="auth-modal-title" id="authModalTitle">Welcome Back</h2>
+                            <p class="auth-modal-subtitle" id="authModalSubtitle">Sign in to continue your creative journey</p>
+                            
+                            <button id="googleAuthBtn" class="auth-provider-button">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="auth-provider-icon">
+                                <span class="auth-provider-text" id="googleBtnText">Sign in with Google</span>
+                            </button>
+                            
+                            <!-- Future auth providers would go here -->
+                            <div class="auth-provider-button" style="opacity: 0.6; cursor: not-allowed;">
+                                <svg class="auth-provider-icon" viewBox="0 0 24 24" fill="#000000"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                                <span class="auth-provider-text">More options coming soon</span>
+                            </div>
+                            
+                            <div class="auth-modal-footer">
+                                <p id="authSwitchText">Don't have an account? <a href="#" class="auth-footer-link" id="authSwitchBtn">Sign up</a></p>
+                                <p style="margin-top: 8px">By continuing, you agree to our <a href="/terms" class="auth-footer-link">Terms</a> and <a href="/privacy" class="auth-footer-link">Privacy Policy</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-modal-right">
+                            <div class="auth-decorations">
+                                <div class="auth-decoration auth-deco-1"></div>
+                                <div class="auth-decoration auth-deco-2"></div>
+                                <div class="floating-icon icon-1">✨</div>
+                                <div class="floating-icon icon-2">🎨</div>
+                                <div class="floating-icon icon-3">🖌️</div>
+                            </div>
+                            
+                            <div class="auth-right-content">
+                                <img src="https://images.unsplash.com/photo-1581591524425-c7e0978865fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="AI generated art" class="auth-right-image">
+                                <h3 class="auth-right-title">Unleash Your Creativity</h3>
+                                <p class="auth-right-description">Join our community and start creating stunning AI-generated artwork today.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                const modalStylesHTML = `
+                <style>
+                    /* Auth Modal Styles */
+                    .auth-modal-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        backdrop-filter: blur(5px);
+                        display: none;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 1000;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+                    
+                    .auth-modal-overlay.active {
+                        display: flex;
+                        opacity: 1;
+                    }
+                    
+                    .auth-modal {
+                        background-color: white;
+                        border-radius: 16px;
+                        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                        width: 90%;
+                        max-width: 900px;
+                        overflow: hidden;
+                        display: flex;
+                        position: relative;
+                        opacity: 0;
+                        transform: translateY(20px);
+                        transition: opacity 0.3s ease, transform 0.3s ease;
+                    }
+                    
+                    .auth-modal-overlay.active .auth-modal {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                    
+                    .auth-modal-left {
+                        flex: 1;
+                        padding: 40px;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    
+                    .auth-modal-right {
+                        flex: 1;
+                        background: linear-gradient(135deg, #4facfe, #00f2fe);
+                        position: relative;
+                        overflow: hidden;
+                        display: none;
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .auth-modal-right {
+                            display: block;
+                        }
+                    }
+                    
+                    .auth-modal-logo {
+                        margin-bottom: 10px;
+                        display: inline-flex;
+                        align-items: center;
+                    }
+                    
+                    .auth-modal-logo-text {
+                        background: linear-gradient(135deg, #4facfe, #00f2fe);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        font-size: 1.4rem;
+                        font-weight: 700;
+                        margin-left: 8px;
+                    }
+                    
+                    .auth-modal-close {
+                        position: absolute;
+                        top: 20px;
+                        right: 20px;
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        color: #666;
+                        z-index: 10;
+                        width: 32px;
+                        height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 50%;
+                        transition: all 0.2s;
+                    }
+                    
+                    .auth-modal-close:hover {
+                        background-color: rgba(0, 0, 0, 0.05);
+                        color: #333;
+                    }
+                    
+                    .auth-modal-title {
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        margin-bottom: 8px;
+                        color: #1f2937;
+                    }
+                    
+                    .auth-modal-subtitle {
+                        color: #6b7280;
+                        margin-bottom: 32px;
+                    }
+                    
+                    .auth-provider-button {
+                        display: flex;
+                        align-items: center;
+                        padding: 12px 16px;
+                        border-radius: 8px;
+                        margin-bottom: 16px;
+                        border: 1px solid #e5e7eb;
+                        background-color: white;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    .auth-provider-button::after {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(135deg, #4facfe, #00f2fe);
+                        opacity: 0;
+                        transition: opacity 0.3s;
+                        z-index: 1;
+                    }
+                    
+                    .auth-provider-button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 5px 15px rgba(91, 143, 249, 0.2);
+                        border-color: transparent;
+                    }
+                    
+                    .auth-provider-button:hover::after {
+                        opacity: 1;
+                    }
+                    
+                    .auth-provider-button:hover .auth-provider-text {
+                        color: white;
+                        position: relative;
+                        z-index: 2;
+                    }
+                    
+                    .auth-provider-button:hover .auth-provider-icon {
+                        position: relative;
+                        z-index: 2;
+                    }
+                    
+                    .auth-provider-button:hover img {
+                        filter: brightness(10);
+                    }
+                    
+                    .auth-provider-icon {
+                        width: 24px;
+                        height: 24px;
+                        margin-right: 12px;
+                    }
+                    
+                    .auth-provider-text {
+                        font-weight: 500;
+                        color: #1f2937;
+                        flex-grow: 1;
+                        text-align: center;
+                    }
+                    
+                    .auth-modal-footer {
+                        margin-top: auto;
+                        text-align: center;
+                        color: #6b7280;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .auth-footer-link {
+                        color: #6d28d9;
+                        text-decoration: none;
+                        font-weight: 500;
+                    }
+                    
+                    .auth-footer-link:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    .auth-decorations {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    
+                    .auth-decoration {
+                        position: absolute;
+                        background-color: rgba(255, 255, 255, 0.1);
+                        border-radius: 50%;
+                    }
+                    
+                    .auth-deco-1 {
+                        width: 300px;
+                        height: 300px;
+                        top: -150px;
+                        right: -100px;
+                        animation: float 20s infinite alternate ease-in-out;
+                    }
+                    
+                    .auth-deco-2 {
+                        width: 200px;
+                        height: 200px;
+                        bottom: -100px;
+                        left: -50px;
+                        animation: float 15s infinite alternate-reverse ease-in-out;
+                    }
+                    
+                    .auth-right-content {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
+                        padding: 40px;
+                        position: relative;
+                        z-index: 2;
+                        color: white;
+                        text-align: center;
+                    }
+                    
+                    .auth-right-title {
+                        font-size: 2rem;
+                        font-weight: 700;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .auth-right-description {
+                        font-size: 1.1rem;
+                        opacity: 0.9;
+                        line-height: 1.6;
+                        margin-bottom: 30px;
+                    }
+                    
+                    .auth-right-image {
+                        width: 80%;
+                        max-width: 300px;
+                        margin-bottom: 30px;
+                        border-radius: 10px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    }
+                    
+                    .floating-icon {
+                        position: absolute;
+                        z-index: 3;
+                        color: white;
+                        font-size: 2rem;
+                        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+                        opacity: 0.7;
+                        animation-duration: 15s;
+                        animation-iteration-count: infinite;
+                        animation-timing-function: ease-in-out;
+                    }
+                    
+                    .icon-1 {
+                        top: 20%;
+                        left: 15%;
+                        animation-name: floatIcon1;
+                    }
+                    
+                    .icon-2 {
+                        top: 60%;
+                        left: 60%;
+                        animation-name: floatIcon2;
+                    }
+                    
+                    .icon-3 {
+                        top: 30%;
+                        left: 70%;
+                        animation-name: floatIcon3;
+                    }
+                    
+                    @keyframes floatIcon1 {
+                        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                        25% { transform: translate(15px, 15px) rotate(5deg); }
+                        50% { transform: translate(0, 30px) rotate(0deg); }
+                        75% { transform: translate(-15px, 15px) rotate(-5deg); }
+                    }
+                    
+                    @keyframes floatIcon2 {
+                        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                        25% { transform: translate(-15px, -10px) rotate(-5deg); }
+                        50% { transform: translate(0, -20px) rotate(0deg); }
+                        75% { transform: translate(15px, -10px) rotate(5deg); }
+                    }
+                    
+                    @keyframes floatIcon3 {
+                        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                        25% { transform: translate(10px, -15px) rotate(5deg); }
+                        50% { transform: translate(20px, 0) rotate(0deg); }
+                        75% { transform: translate(10px, 15px) rotate(-5deg); }
+                    }
+                    
+                    @keyframes float {
+                        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                        50% { transform: translate(-20px, 20px) rotate(5deg); }
+                    }
+                </style>`;
+                
+                // Add styles to head
+                document.head.insertAdjacentHTML('beforeend', modalStylesHTML);
+                
+                // Add modal to body
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Add click event for close button
+                const closeButton = document.getElementById('closeAuthModal');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        const modal = document.getElementById('authModal');
+                        if (modal) {
+                            modal.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                }
+                
+                // Add click event for outside modal
+                const modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            this.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                }
+                
+                // Add Google authentication
+                const googleBtn = document.getElementById('googleAuthBtn');
+                if (googleBtn) {
+                    googleBtn.addEventListener('click', function() {
+                        if (typeof firebase !== 'undefined' && firebase.auth) {
+                            const provider = new firebase.auth.GoogleAuthProvider();
+                            firebase.auth().signInWithPopup(provider)
+                                .then((result) => {
+                                    return result.user.getIdToken();
+                                })
+                                .then((idToken) => {
+                                    // Determine endpoint based on current mode
+                                    const currentMode = document.getElementById('authModalTitle').textContent === 'Welcome Back' ? 'login' : 'signup';
+                                    const endpoint = currentMode === 'login' ? '/login' : '/signup';
+                                    
+                                    return fetch(endpoint, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ idToken: idToken })
+                                    });
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        window.location.href = data.redirect;
+                                    } else {
+                                        console.error(data.error);
+                                        alert('Authentication error: ' + data.error);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Authentication error:', error);
+                                    alert('Authentication error: ' + error.message);
+                                });
+                        } else {
+                            alert('Firebase authentication is not available. Please try again later.');
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+    <script src="/static/js/firebase-debug.js"></script>
+</body>
+</html>

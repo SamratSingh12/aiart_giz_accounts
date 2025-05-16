@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Image - AI Art | Generate Images from Text</title>
+    <meta name="description" content="Transform your text descriptions into stunning AI-generated images with our Text to Image tool. Free, unlimited, no signup required.">
+    <meta name="keywords" content="text to image, AI image generation, AI art, text to art, AI image creator">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="AI Art">
+    <link rel="canonical" href="https://aiart-zroo.onrender.com/text-to-image">
+    
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <!-- Initialize Firebase First -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_auth_domain }}",
+            projectId: "{{ firebase_project_id }}",
+            appId: "{{ firebase_app_id }}"
+        };
+        
+        // Initialize Firebase
+        if (typeof firebase !== 'undefined') {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                console.log("Firebase initialized");
+            }
+        } else {
+            console.error("Firebase SDK not available");
+        }
+    </script>
+
+    <!-- Global Auth Handler (loads first) -->
+    <script src="/static/js/auth-global.js"></script>
+    
+    <!-- Auth Fix Script -->
+    <script src="/static/js/auth-fix.js"></script>
+    
+    <!-- Google Adsense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7179365574545627"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="nav-logo">AI Art</a>
+                <button class="mobile-menu-btn">☰</button>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    
+                    <!-- AI Tools dropdown -->
+                    <div class="dropdown">
+                        <button type="button" class="dropdown-toggle nav-link">AI Tools <span class="dropdown-arrow">▼</span></button>
+                        <div class="dropdown-menu">
+                            <a href="/text-to-image" class="dropdown-item">Text to Image</a>
+                            <a href="/image-to-image" class="dropdown-item">Image to Image</a>
+                            <a href="/image-to-video" class="dropdown-item">Image to Video</a>
+                        </div>
+                    </div>
+                    
+                    <a href="/api-docs" class="nav-link">API</a>
+                    <a href="#" class="nav-link open-auth-modal" data-mode="login">Login</a>
+                    <a href="#" class="nav-link open-auth-modal" data-mode="signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <main class="main-content">
+        <div class="container my-4">
+            <div class="card p-4 sm:p-6 shadow-lg">
+                <div class="light-effect"></div>
+                <h1 class="text-3xl font-bold text-center mb-2">
+                    <span class="gradient-text">Text to Image</span>
+                </h1>
+                <p class="text-center text-gray-500 mb-6">Transform your text descriptions into stunning AI-generated images</p>
+                
+                <form id="image-form" class="my-6" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="video-description" class="form-label">Describe the image you want to create:</label>
+                        <div class="textarea-container">
+                            <textarea id="video-description" name="video_description" class="form-input" required placeholder="Example: A serene mountain landscape with a waterfall at sunset, photorealistic style"></textarea>
+                        </div>
+                        <div class="help-text text-sm text-gray-500 mt-1">Tip: To control the weight of a given word use the format <code>word:weight</code>, where weight is a value between 0 and 1.</div>
+                        <div class="button-container mt-4">
+                            <button type="button" id="enhance-prompt-btn" class="btn btn-primary" title="Enhance Prompt with AI"><i class="magic-wand">✨</i><span class="button-text">Enhance Prompt</span></button>
+                            <button type="button" id="revert-prompt-btn" class="btn btn-secondary" title="Revert to Original" style="display: none;">↩️<span class="button-text">Revert</span></button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mt-4">
+                        <div class="advanced-options-toggle">
+                            <button type="button" id="toggle-advanced-options" class="btn btn-secondary">
+                                <span id="advanced-options-icon">▼</span> Advanced Options
+                            </button>
+                        </div>
+                        <div id="advanced-options-container" class="advanced-options-container" style="display: none;">
+                            <div class="form-group mt-4">
+                                <label for="txt2img-negative-prompt" class="form-label">Negative prompt (optional - what to avoid):</label>
+                                <div class="textarea-container">
+                                    <textarea id="txt2img-negative-prompt" name="negative_prompt" class="form-input" placeholder="Example: blurry, distorted, low quality"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mt-6">
+                                <label for="txt2img-style-preset" class="form-label">Style Preset:</label>
+                                <select id="txt2img-style-preset" name="style_preset" class="form-select">
+                                    <option value="">None (Default)</option>
+                                    <option value="3d-model">3D Model</option>
+                                    <option value="analog-film">Analog Film</option>
+                                    <option value="anime">Anime</option>
+                                    <option value="cinematic">Cinematic</option>
+                                    <option value="comic-book">Comic Book</option>
+                                    <option value="digital-art">Digital Art</option>
+                                    <option value="enhance">Enhance</option>
+                                    <option value="fantasy-art">Fantasy Art</option>
+                                    <option value="isometric">Isometric</option>
+                                    <option value="line-art">Line Art</option>
+                                    <option value="low-poly">Low Poly</option>
+                                    <option value="modeling-compound">Modeling Compound</option>
+                                    <option value="neon-punk">Neon Punk</option>
+                                    <option value="origami">Origami</option>
+                                    <option value="photographic">Photographic</option>
+                                    <option value="pixel-art">Pixel Art</option>
+                                    <option value="tile-texture">Tile Texture</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group mt-6">
+                                <label for="txt2img-aspect-ratio" class="form-label">Aspect Ratio:</label>
+                                <select id="txt2img-aspect-ratio" name="aspect_ratio" class="form-select">
+                                    <option value="16:9">16:9 (Landscape)</option>
+                                    <option value="1:1">1:1 (Square)</option>
+                                    <option value="9:16">9:16 (Portrait)</option>
+                                    <option value="4:5">4:5 (Portrait)</option>
+                                    <option value="5:4">5:4 (Landscape)</option>
+                                    <option value="2:3">2:3 (Portrait)</option>
+                                    <option value="3:2">3:2 (Landscape)</option>
+                                    <option value="21:9">21:9 (Ultrawide)</option>
+                                    <option value="9:21">9:21 (Tall)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group mt-6">
+                                <label for="txt2img-output-format" class="form-label">Output Format:</label>
+                                <select id="txt2img-output-format" name="output_format" class="form-select">
+                                    <option value="png">PNG (Best quality)</option>
+                                    <option value="jpeg">JPEG (Smaller file size)</option>
+                                    <option value="webp">WebP (Web optimized)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group mt-6">
+                                <label for="txt2img-seed" class="form-label">Seed (0 for random):</label>
+                                <input type="number" id="txt2img-seed" name="seed" class="form-input" min="0" max="4294967295" value="0" placeholder="Enter a seed number for reproducible results">
+                                <div class="help-text text-sm text-gray-500 mt-1">Use the same seed to get consistent results or 0 for random generation</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group" id="test-mode-container" style="display: none;">
+                        <input type="checkbox" id="test-mode" name="test_mode">
+                        <label for="test-mode">Test Mode (Uses placeholder image instead of generating new one)</label>
+                    </div>
+                    
+                    <div class="text-center mt-8">
+                        <button type="submit" class="btn btn-primary px-8 py-3 text-lg">
+                            <span class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 2v7"></path><path d="M10 7l2 3 2-3"></path><path d="M4.93 10.93l6.1 2.65"></path><path d="M2 15.5L4.93 13"></path><path d="M19.07 10.93l-6.1 2.65"></path><path d="M22 15.5L19.07 13"></path><path d="M12 21.5v-4"></path></svg>
+                                Generate Image
+                            </span>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Loading indicator -->
+                <div id="loading" class="hidden text-center py-6">
+                    <div class="loading-spinner mx-auto"></div>
+                    <p class="mt-4 text-gray-700">Generating your image...</p>
+                </div>
+                
+                <!-- Results section -->
+                <div id="result" class="hidden mt-8">
+                    <h2 class="text-2xl font-bold text-primary mb-4">Your Generated Image</h2>
+                    <div class="image-card p-4 rounded-lg border border-gray-200 shadow-sm text-center">
+                        <img id="generated-image" src="" alt="Generated image" class="max-w-full mx-auto rounded-md">
+                        <div class="mt-4">
+                            <button id="download-btn" class="btn btn-primary" disabled>Download Image</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error section -->
+                <div id="error" class="hidden mt-8">
+                    <div class="p-4 bg-red-100 text-red-700 rounded-lg">
+                        <h2 class="text-xl font-bold mb-2">Error</h2>
+                        <p>An error occurred while generating your image. Please try again.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- How it works section -->
+            <section class="my-12">
+                <h2 class="text-2xl font-bold text-primary mb-6">How Text to Image Works</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M18 13l-6 6-6-6"></path></svg>
+                        </div>
+                        <h3 class="feature-title">1. Describe Your Vision</h3>
+                        <p class="feature-description">Type a detailed description of the image you want to create. Be specific about style, mood, colors, and composition.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <h3 class="feature-title">2. AI Generates Your Image</h3>
+                        <p class="feature-description">Our advanced AI model processes your description and transforms it into a unique image that matches your specifications.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        </div>
+                        <h3 class="feature-title">3. Download and Use</h3>
+                        <p class="feature-description">Once generated, you can download your image in high resolution and use it for personal or commercial projects.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                <span class="footer-logo-text">AI Art</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="/" class="footer-link">Home</a>
+                <a href="/text-to-image" class="footer-link">Text to Image</a>
+                <a href="/image-to-image" class="footer-link">Image to Image</a>
+                <a href="/image-to-video" class="footer-link">Image to Video</a>
+                <a href="/api-docs" class="footer-link">API</a>
+            </div>
+            
+            <p class="footer-description">
+                AI Art allows you to create and transform images using cutting-edge artificial intelligence. 
+                Powered by state-of-the-art diffusion models, our platform offers a simple and intuitive way to 
+                generate artwork, modify photos, and more.
+            </p>
+            
+            <p class="footer-copyright">
+                &copy; 2025 AI Art. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Auth Modal HTML -->
+    <div class="auth-modal-overlay" id="authModal">
+        <div class="auth-modal">
+            <button class="auth-modal-close" id="closeAuthModal">×</button>
+            
+            <div class="auth-modal-left">
+                <div class="auth-modal-logo">
+                    <span class="auth-modal-logo-text">AI Art</span>
+                </div>
+                
+                <h2 class="auth-modal-title" id="authModalTitle">Welcome Back</h2>
+                <p class="auth-modal-subtitle" id="authModalSubtitle">Sign in to continue your creative journey</p>
+                
+                <button id="googleAuthBtn" class="auth-provider-button">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="auth-provider-icon">
+                    <span class="auth-provider-text" id="googleBtnText">Sign in with Google</span>
+                </button>
+                
+                <!-- Future auth providers would go here -->
+                <div class="auth-provider-button" style="opacity: 0.6; cursor: not-allowed;">
+                    <svg class="auth-provider-icon" viewBox="0 0 24 24" fill="#000000"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    <span class="auth-provider-text">More options coming soon</span>
+                </div>
+                
+                <div class="auth-modal-footer">
+                    <p id="authSwitchText">Don't have an account? <a href="#" class="auth-footer-link" id="authSwitchBtn">Sign up</a></p>
+                </div>
+            </div>
+            
+            <div class="auth-modal-right">
+                <div class="auth-decorations">
+                    <div class="auth-decoration auth-deco-1"></div>
+                    <div class="auth-decoration auth-deco-2"></div>
+                    <div class="floating-icon icon-1">✨</div>
+                    <div class="floating-icon icon-2">🎨</div>
+                    <div class="floating-icon icon-3">🖌️</div>
+                </div>
+                
+                <div class="auth-right-content">
+                    <img src="https://images.unsplash.com/photo-1581591524425-c7e0978865fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="AI generated art" class="auth-right-image">
+                    <h3 class="auth-right-title">Unleash Your Creativity</h3>
+                    <p class="auth-right-description">Join our community and start creating stunning AI-generated artwork today.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal Styles -->
+    <style>
+        /* Auth Modal Styles */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .auth-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .auth-modal {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 900px;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .auth-modal-overlay.active .auth-modal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .auth-modal-left {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-modal-right {
+            flex: 1;
+            background: linear-gradient(135deg, var(--gradient-end, #00f2fe), var(--gradient-start, #4facfe));
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .auth-modal-right {
+                display: block;
+            }
+        }
+        
+        .auth-modal-logo {
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .auth-modal-logo-text {
+            background: linear-gradient(135deg, var(--gradient-start, #4facfe), var(--gradient-end, #00f2fe));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        
+        .auth-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            z-index: 10;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .auth-modal-close:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+        
+        .auth-modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        
+        .auth-modal-subtitle {
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .auth-right-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: 40px;
+        position: relative;
+        z-index: 2;
+        color: white;
+        text-align: center;
+        }
+        
+        .auth-provider-button {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-provider-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gradient-start, #4facfe), var(--gradient-end, #00f2fe));
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+        
+        .auth-provider-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(91, 143, 249, 0.2);
+            border-color: transparent;
+        }
+        
+        .auth-provider-button:hover::after {
+            opacity: 1;
+        }
+        
+        .auth-provider-button:hover .auth-provider-text {
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .auth-provider-button:hover .auth-provider-icon {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .auth-provider-button:hover img {
+            filter: brightness(10);
+        }
+        
+        .auth-provider-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+        
+        .auth-provider-text {
+            font-weight: 500;
+            color: #1f2937;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        .auth-modal-footer {
+            margin-top: auto;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .auth-footer-link {
+            color: var(--primary, #6d28d9);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-right-image {
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-decorations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .auth-decoration {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .auth-deco-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -100px;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        
+        .auth-deco-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -100px;
+            left: -50px;
+            animation: float 15s infinite alternate-reverse ease-in-out;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            z-index: 3;
+            color: white;
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            opacity: 0.7;
+            animation-duration: 15s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+        
+        .icon-1 {
+            top: 20%;
+            left: 15%;
+            animation-name: floatIcon1;
+        }
+        
+        .icon-2 {
+            top: 60%;
+            left: 60%;
+            animation-name: floatIcon2;
+        }
+        
+        .icon-3 {
+            top: 30%;
+            left: 70%;
+            animation-name: floatIcon3;
+        }
+        
+        @keyframes floatIcon1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(15px, 15px) rotate(5deg); }
+            50% { transform: translate(0, 30px) rotate(0deg); }
+            75% { transform: translate(-15px, 15px) rotate(-5deg); }
+        }
+        
+        @keyframes floatIcon2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-15px, -10px) rotate(-5deg); }
+            50% { transform: translate(0, -20px) rotate(0deg); }
+            75% { transform: translate(15px, -10px) rotate(5deg); }
+        }
+        
+        @keyframes floatIcon3 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -15px) rotate(5deg); }
+            50% { transform: translate(20px, 0) rotate(0deg); }
+            75% { transform: translate(10px, 15px) rotate(-5deg); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, 20px) rotate(5deg); }
+        }
+    </style>
+
+    <script src="/static/js/mobile-nav.js"></script>
+    <script src="/static/js/auth-modal.js"></script>
+    <script>
+        // We no longer need this manual auth check as auth-global.js handles it
+        // The script is kept for compatibility but does not run
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup auth modal buttons (in case they weren't set up by auth-modal.js)
+            document.querySelectorAll('.open-auth-modal').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const mode = this.getAttribute('data-mode');
+                    if (window.openAuthModal) {
+                        window.openAuthModal(mode);
+                    } else {
+                        console.error("openAuthModal not available");
+                        // Create the auth modal manually if needed
+                        const authModal = document.getElementById('authModal');
+                        if (!authModal) {
+                            alert("Please go to the homepage to log in. Authentication on this page is experiencing issues.");
+                            window.location.href = '/?action=' + mode;
+                        } else {
+                            authModal.classList.add('active');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+<script>
+    // Variables to store original and enhanced prompts
+    let originalPrompt = '';
+    
+    // Developer mode toggle with keyboard shortcut (Ctrl+Shift+D)
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+            const testModeContainer = document.getElementById('test-mode-container');
+            if (testModeContainer.style.display === 'none') {
+                testModeContainer.style.display = 'flex';
+                console.log('Developer mode activated');
+            } else {
+                testModeContainer.style.display = 'none';
+                console.log('Developer mode deactivated');
+            }
+        }
+    });
+    
+    // Enhance prompt button click handler
+    document.getElementById('enhance-prompt-btn').addEventListener('click', function() {
+        const promptInput = document.getElementById('video-description');
+        const userPrompt = promptInput.value.trim();
+        
+        if (!userPrompt) {
+            alert('Please enter a description first');
+            return;
+        }
+        
+        // Store the original prompt
+        originalPrompt = userPrompt;
+        
+        // Show loading state on the button
+        this.disabled = true;
+        this.innerHTML = '<div class="loading-dots"><div></div><div></div><div></div></div>';
+        
+        // Create form data for the API request
+        const formData = new FormData();
+        formData.append('prompt', userPrompt);
+        
+        // Call the enhance-prompt API
+        fetch('/api/enhance-prompt', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="magic-wand">✨</i><span class="button-text">Enhance Prompt</span>';
+            
+            if (data.success) {
+                // Update the prompt with the enhanced version
+                promptInput.value = data.enhanced_prompt;
+                
+                // Show the revert button
+                document.getElementById('revert-prompt-btn').style.display = 'block';
+            } else {
+                alert('Failed to enhance prompt: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            // Reset button state
+            this.disabled = false;
+            this.innerHTML = '<i class="magic-wand">✨</i><span class="button-text">Enhance Prompt</span>';
+            
+            console.error('Error:', error);
+            alert('Failed to enhance prompt: ' + error.message);
+        });
+    });
+    
+    // Toggle advanced options
+    document.getElementById('toggle-advanced-options').addEventListener('click', function() {
+        const container = document.getElementById('advanced-options-container');
+        const icon = document.getElementById('advanced-options-icon');
+        
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            icon.textContent = '▲';
+            this.classList.add('active');
+        } else {
+            container.style.display = 'none';
+            icon.textContent = '▼';
+            this.classList.remove('active');
+        }
+    });
+    
+    document.getElementById('revert-prompt-btn').addEventListener('click', function() {
+        // Restore the original prompt
+        document.getElementById('video-description').value = originalPrompt;
+        
+        // Hide the revert button
+        this.style.display = 'none';
+    });
+    
+    // Form submission handler
+    document.getElementById('image-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading, hide results and errors
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.getElementById('error').classList.add('hidden');
+        
+        // Get form data
+        const description = document.getElementById('video-description').value;
+        const testMode = document.getElementById('test-mode')?.checked || false;
+        
+        // Create form data object
+        const formData = new FormData();
+        formData.append('video_description', description);
+        formData.append('test_mode', testMode ? 'true' : 'false');
+        
+        // Add advanced options if visible
+        if (document.getElementById('advanced-options-container').style.display !== 'none') {
+            // Add negative prompt
+            const negativePrompt = document.getElementById('txt2img-negative-prompt').value;
+            if (negativePrompt) {
+                formData.append('negative_prompt', negativePrompt);
+            }
+            
+            // Add style preset
+            const stylePreset = document.getElementById('txt2img-style-preset').value;
+            if (stylePreset) {
+                formData.append('style_preset', stylePreset);
+            }
+            
+            // Add aspect ratio
+            const aspectRatio = document.getElementById('txt2img-aspect-ratio').value;
+            formData.append('aspect_ratio', aspectRatio);
+            
+            // Add output format
+            const outputFormat = document.getElementById('txt2img-output-format').value;
+            formData.append('output_format', outputFormat);
+            
+            // Add seed (if random seed is requested, let server handle it)
+            const seedValue = parseInt(document.getElementById('txt2img-seed').value);
+            if (!isNaN(seedValue) && seedValue >= 0) {
+                formData.append('seed', seedValue.toString());
+            } else {
+                formData.append('seed', '0');
+            }
+        }
+        
+        // Send request
+        fetch('/generate', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading
+            document.getElementById('loading').classList.add('hidden');
+            
+            if (data.success) {
+                // Show result
+                document.getElementById('result').classList.remove('hidden');
+                document.getElementById('generated-image').src = data.image_path + '?t=' + new Date().getTime();
+                
+                // Enable download button
+                document.getElementById('download-btn').disabled = false;
+                // Save the current URL for download
+                window.currentImagePath = data.image_path;
+                
+                // Add download handler
+                document.getElementById('download-btn').onclick = function() {
+                    downloadImage(data.image_path);
+                };
+            } else {
+                // Show error
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('error').querySelector('p').textContent = data.error || 'An error occurred';
+            }
+        })
+        .catch(error => {
+            // Hide loading, show error
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error').querySelector('p').textContent = 'Network error: ' + error.message;
+            console.error('Error:', error);
+        });
+    });
+    
+    // Function to handle image download
+    function downloadImage(imagePath) {
+        if (!imagePath) {
+            console.error('No image path found for download');
+            return;
+        }
+        
+        // Create a filename from the path
+        const pathParts = imagePath.split('/');
+        const filename = pathParts[pathParts.length - 1];
+        
+        // Fetch the image as a blob
+        fetch(imagePath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create a URL for the blob
+                const url = window.URL.createObjectURL(blob);
+                
+                // Create a temporary link element
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename; // Set the filename
+                
+                // Add to document, click it, and remove it
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Error downloading image:', error);
+                alert('Failed to download image. Please try again later.');
+            });
+    }
+</script>
+</body>
+</html>
