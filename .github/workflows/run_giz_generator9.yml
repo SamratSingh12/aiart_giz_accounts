@@ -39,3 +39,5 @@ jobs:
 
     - name: Run the script
       run: python giz_video_generator/account_giz_generator.py
+      env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
